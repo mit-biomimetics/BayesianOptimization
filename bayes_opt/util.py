@@ -68,7 +68,7 @@ def acq_max(ac, gp, y_max, bounds, random_state, n_warmup=10000, n_iter=10):
 
     # Clip output to make sure it lies within the bounds. Due to floating
     # point technicalities this is not always the case.
-    return np.clip(x_max, bounds[:, 0], bounds[:, 1])
+    return np.clip(x_max, bounds[:, 0], bounds[:, 1]), max_acq
 
 
 class UtilityFunction(object):

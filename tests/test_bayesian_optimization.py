@@ -75,7 +75,7 @@ def test_suggest_at_random():
     optimizer = BayesianOptimization(target_func, PBOUNDS, random_state=1)
 
     for _ in range(50):
-        sample = optimizer.space.params_to_array(optimizer.suggest(util))
+        sample = optimizer.space.params_to_array(optimizer.suggest(util)[0])
         assert len(sample) == optimizer.space.dim
         assert all(sample >= optimizer.space.bounds[:, 0])
         assert all(sample <= optimizer.space.bounds[:, 1])
@@ -88,7 +88,7 @@ def test_suggest_with_one_observation():
     optimizer.register(params={"p1": 1, "p2": 2}, target=3)
 
     for _ in range(5):
-        sample = optimizer.space.params_to_array(optimizer.suggest(util))
+        sample = optimizer.space.params_to_array(optimizer.suggest(util)[0])
         assert len(sample) == optimizer.space.dim
         assert all(sample >= optimizer.space.bounds[:, 0])
         assert all(sample <= optimizer.space.bounds[:, 1])

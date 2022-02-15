@@ -72,7 +72,7 @@ def test_acq_with_ucb():
     episilon = 1e-2
     y_max = 2.0
 
-    max_arg = acq_max(
+    max_arg, max_val = acq_max(
         util.utility,
         GP,
         y_max,
@@ -90,7 +90,7 @@ def test_acq_with_ei():
     episilon = 1e-2
     y_max = 2.0
 
-    max_arg = acq_max(
+    max_arg, max_val = acq_max(
         util.utility,
         GP,
         y_max,
@@ -108,7 +108,7 @@ def test_acq_with_poi():
     episilon = 1e-2
     y_max = 2.0
 
-    max_arg = acq_max(
+    max_arg, max_val = acq_max(
         util.utility,
         GP,
         y_max,

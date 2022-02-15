@@ -170,16 +170,15 @@ class BayesianOptimization(Observable):
     def suggest(self, utility_function):
         """Most promising point to probe next"""
         if len(self._space) == 0:
-            return self._space.array_to_params(self._space.random_sample())
+            return (self._space.array_to_params(self._space.random_sample()), )
 
-        # Sklearn's GP throws a large number of warnings at times, but
-        # we don't really need to see them here.
+        # Sklearn's GP throws a large number of warnings at times, but        # we don't really need to see them here.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._gp.fit(self._space.params, self._space.target)
 
         # Finding argmax of the acquisition function.
-        suggestion = acq_max(
+        suggestion, expected_improvement = acq_max(
             ac=utility_function.utility,
             gp=self._gp,
             y_max=self._space.target.max(),
@@ -187,7 +186,7 @@ class BayesianOptimization(Observable):
             random_state=self._random_state
         )
 
-        return self._space.array_to_params(suggestion)
+        return self._space.array_to_params(suggestion), expected_improvement
 
     def _prime_queue(self, init_points):
         """Make sure there's something in the queue at the very beginning."""
@@ -212,6 +211,7 @@ class BayesianOptimization(Observable):
                  kappa_decay=1,
                  kappa_decay_delay=0,
                  xi=0.0,
+                 conv_tol=0.,
                  **gp_params):
         """
         Probes the target space to find the parameters that yield the maximum
@@ -265,8 +265,11 @@ class BayesianOptimization(Observable):
                 x_probe = next(self._queue)
             except StopIteration:
                 util.update_params()
-                x_probe = self.suggest(util)
+                x_probe, expected_improvement = self.suggest(util)
                 iteration += 1
+
+                if (expected_improvement - self._space.target.max()) < conv_tol:
+                    break
 
             self.probe(x_probe, lazy=False)
 
